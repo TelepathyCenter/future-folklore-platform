@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@9 --activate
+
+COPY apps/web/package.json .
+
+RUN pnpm install
+
+COPY apps/web/ .
+
+EXPOSE 3000
+
+CMD ["pnpm", "dev"]

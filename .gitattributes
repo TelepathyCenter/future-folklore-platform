@@ -1,0 +1,7 @@
+# Enforce LF line endings for shell scripts (critical for Docker on Windows)
+*.sh text eol=lf
+*.bash text eol=lf
+entrypoint* text eol=lf
+
+# Auto-detect for everything else
+* text=auto

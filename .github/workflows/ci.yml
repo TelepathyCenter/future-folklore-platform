@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Node.js / pnpm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      # Python
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          cd apps/api
+          pip install -e .[dev]
+
+      # Nx affected tasks (JS/TS)
+      - name: Lint, test, build (JS/TS)
+        run: pnpm exec nx affected -t lint test build typecheck
+
+      # Python tasks
+      - name: Lint (Python)
+        run: pnpm exec nx run api:lint
+
+      - name: Test (Python)
+        run: pnpm exec nx run api:test
