@@ -2,7 +2,7 @@
  * @future-folklore-platform/db
  *
  * Database schemas, migrations, and query utilities.
- * Populated in Layer 0.2 when Supabase is provisioned.
+ * Auto-generated types in database.types.ts (run `pnpm db:typegen` to regenerate).
  */
 
-export {};
+export type { Database } from './database.types';
