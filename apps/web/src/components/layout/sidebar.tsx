@@ -2,7 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, FolderOpen, User, LayoutDashboard, Phone } from 'lucide-react';
+import {
+  Users,
+  FolderOpen,
+  User,
+  LayoutDashboard,
+  Phone,
+  Network,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -10,6 +17,7 @@ const navItems = [
   { href: '/directory', label: 'Directory', icon: Users },
   { href: '/projects', label: 'Projects', icon: FolderOpen },
   { href: '/calls', label: 'Calls', icon: Phone },
+  { href: '/graph', label: 'Knowledge', icon: Network },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 

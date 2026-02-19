@@ -7,6 +7,7 @@ const PROTECTED_ROUTES = [
   '/directory',
   '/projects',
   '/calls',
+  '/graph',
 ];
 const AUTH_ROUTES = ['/login', '/register', '/forgot-password'];
 

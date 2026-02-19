@@ -116,6 +116,107 @@ export type Database = {
           },
         ];
       };
+      concepts: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          id: string;
+          is_canonical: boolean;
+          name: string;
+          parent_id: string | null;
+          slug: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          description?: string | null;
+          id?: string;
+          is_canonical?: boolean;
+          name: string;
+          parent_id?: string | null;
+          slug: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          id?: string;
+          is_canonical?: boolean;
+          name?: string;
+          parent_id?: string | null;
+          slug?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'concepts_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'concepts_parent_id_fkey';
+            columns: ['parent_id'];
+            isOneToOne: false;
+            referencedRelation: 'concepts';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      graph_edges: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          edge_type: Database['public']['Enums']['edge_type'];
+          id: string;
+          notes: string | null;
+          source_id: string;
+          source_type: Database['public']['Enums']['node_type'];
+          target_id: string;
+          target_type: Database['public']['Enums']['node_type'];
+          updated_at: string;
+          weight: number;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          edge_type: Database['public']['Enums']['edge_type'];
+          id?: string;
+          notes?: string | null;
+          source_id: string;
+          source_type: Database['public']['Enums']['node_type'];
+          target_id: string;
+          target_type: Database['public']['Enums']['node_type'];
+          updated_at?: string;
+          weight?: number;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          edge_type?: Database['public']['Enums']['edge_type'];
+          id?: string;
+          notes?: string | null;
+          source_id?: string;
+          source_type?: Database['public']['Enums']['node_type'];
+          target_id?: string;
+          target_type?: Database['public']['Enums']['node_type'];
+          updated_at?: string;
+          weight?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'graph_edges_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       memberships: {
         Row: {
           created_at: string;
@@ -335,11 +436,28 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      show_limit: { Args: never; Returns: number };
+      show_trgm: { Args: { '': string }; Returns: string[] };
     };
     Enums: {
       call_status: 'scheduled' | 'live' | 'completed' | 'cancelled';
+      edge_type:
+        | 'works_on'
+        | 'member_of'
+        | 'interested_in'
+        | 'expert_in'
+        | 'mentors'
+        | 'collaborates_with'
+        | 'explores'
+        | 'funded_by'
+        | 'builds_on'
+        | 'related_to'
+        | 'subtopic_of'
+        | 'related_concept'
+        | 'discussed_in'
+        | 'presented_at';
       membership_role: 'lead' | 'member' | 'advisor' | 'observer';
+      node_type: 'profile' | 'project' | 'organization' | 'concept' | 'call';
       profile_role:
         | 'researcher'
         | 'investor'
@@ -481,7 +599,24 @@ export const Constants = {
   public: {
     Enums: {
       call_status: ['scheduled', 'live', 'completed', 'cancelled'],
+      edge_type: [
+        'works_on',
+        'member_of',
+        'interested_in',
+        'expert_in',
+        'mentors',
+        'collaborates_with',
+        'explores',
+        'funded_by',
+        'builds_on',
+        'related_to',
+        'subtopic_of',
+        'related_concept',
+        'discussed_in',
+        'presented_at',
+      ],
       membership_role: ['lead', 'member', 'advisor', 'observer'],
+      node_type: ['profile', 'project', 'organization', 'concept', 'call'],
       profile_role: [
         'researcher',
         'investor',
