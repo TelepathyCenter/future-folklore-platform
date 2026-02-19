@@ -14,6 +14,108 @@ export type Database = {
   };
   public: {
     Tables: {
+      call_rsvps: {
+        Row: {
+          call_id: string;
+          created_at: string;
+          id: string;
+          profile_id: string;
+          status: Database['public']['Enums']['rsvp_status'];
+          updated_at: string;
+        };
+        Insert: {
+          call_id: string;
+          created_at?: string;
+          id?: string;
+          profile_id: string;
+          status?: Database['public']['Enums']['rsvp_status'];
+          updated_at?: string;
+        };
+        Update: {
+          call_id?: string;
+          created_at?: string;
+          id?: string;
+          profile_id?: string;
+          status?: Database['public']['Enums']['rsvp_status'];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'call_rsvps_call_id_fkey';
+            columns: ['call_id'];
+            isOneToOne: false;
+            referencedRelation: 'calls';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'call_rsvps_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      calls: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          duration_minutes: number;
+          id: string;
+          notes: string | null;
+          project_id: string | null;
+          scheduled_at: string;
+          status: Database['public']['Enums']['call_status'];
+          title: string;
+          updated_at: string;
+          video_link: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          description?: string | null;
+          duration_minutes?: number;
+          id?: string;
+          notes?: string | null;
+          project_id?: string | null;
+          scheduled_at: string;
+          status?: Database['public']['Enums']['call_status'];
+          title: string;
+          updated_at?: string;
+          video_link?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          duration_minutes?: number;
+          id?: string;
+          notes?: string | null;
+          project_id?: string | null;
+          scheduled_at?: string;
+          status?: Database['public']['Enums']['call_status'];
+          title?: string;
+          updated_at?: string;
+          video_link?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'calls_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'calls_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       memberships: {
         Row: {
           created_at: string;
@@ -236,6 +338,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
+      call_status: 'scheduled' | 'live' | 'completed' | 'cancelled';
       membership_role: 'lead' | 'member' | 'advisor' | 'observer';
       profile_role:
         | 'researcher'
@@ -246,6 +349,7 @@ export type Database = {
       profile_visibility: 'public' | 'community' | 'private';
       project_status: 'active' | 'incubating' | 'paused' | 'completed';
       project_visibility: 'public' | 'community' | 'incubator';
+      rsvp_status: 'going' | 'not_going' | 'maybe';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -376,6 +480,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      call_status: ['scheduled', 'live', 'completed', 'cancelled'],
       membership_role: ['lead', 'member', 'advisor', 'observer'],
       profile_role: [
         'researcher',
@@ -387,6 +492,7 @@ export const Constants = {
       profile_visibility: ['public', 'community', 'private'],
       project_status: ['active', 'incubating', 'paused', 'completed'],
       project_visibility: ['public', 'community', 'incubator'],
+      rsvp_status: ['going', 'not_going', 'maybe'],
     },
   },
 } as const;

@@ -44,9 +44,9 @@ nx affected -t test # Only test changed projects
 - **Region**: us-east-2
 - **URL**: `https://elndhznjnexzutammxdf.supabase.co`
 - **Org**: The Telepathy Center
-- **Tables**: profiles, organizations, projects, memberships
-- **Enums**: membership_role, profile_role, profile_visibility, project_status, project_visibility
-- **RLS**: 19 policies with tiered access (public/community/incubator)
+- **Tables**: profiles, organizations, projects, memberships, calls, call_rsvps
+- **Enums**: membership_role, profile_role, profile_visibility, project_status, project_visibility, call_status, rsvp_status
+- **RLS**: 31 policies with tiered access (public/community/incubator)
 - **Trigger**: handle_new_user() auto-creates profile on signup
 - **Types**: Auto-generated via `pnpm db:typegen` or Supabase MCP → `packages/db/src/database.types.ts`
 
@@ -71,11 +71,11 @@ See `DEVELOPMENT_OUTLINE.yaml` in the project's Claude Code config for the full 
 - **Step 0.4** — Design system: Tailwind v4, shadcn/ui primitives, branded landing page, layout shell (commit `5edc6b3`)
 - **Step 1.1** — Auth + profiles: email/password + OAuth sign-in, profile view/edit, community directory with search/filter (commit `30e066a`)
 - **Deployment** — Vercel (frontend) + Railway (backend) + Supabase OAuth (Google/GitHub) live (commit `1204ffe`)
+- **Layer 1.3** — Project directory: listing with search/filter (status, domain tags), detail page with team members, project creation form
+- **Layer 1.4** — Calls/events: community + project calls, RSVP (going/maybe/not going), meeting notes, .ics calendar export. Migration `0002_calls_schema.sql` (calls + call_rsvps tables with RLS)
 
 ### Next Up
 
-- **Layer 1.3** — Project directory (browse, detail pages)
-- **Layer 1.4** — Weekly calls (scheduling, notes)
 - **Layer 2** — Blockchain timestamping, knowledge graph
 
 ## Design System
@@ -99,4 +99,4 @@ See `DEVELOPMENT_OUTLINE.yaml` in the project's Claude Code config for the full 
 - Next.js 16 warns about `middleware.ts` deprecation (use `proxy` instead) — Supabase SSR hasn't updated yet, safe to ignore for now
 - `@supabase/ssr` `setAll` callback needs explicit typing in strict TypeScript mode
 - `nx sync` must be run after adding new workspace dependencies
-- Supabase PostgREST v14 types cause `never` inference on `.update().eq()` chains — use `as any` on `supabase.from()` as workaround
+- Supabase PostgREST v14 types cause `never` inference on `.update().eq()` chains and embedded selects (FK hint syntax) — cast query results with `as { data: any; ... }` or use `as any` on `supabase.from()`
