@@ -148,6 +148,136 @@ export async function getConcept(slug: string): Promise<ConceptDetail | null> {
   } as ConceptDetail;
 }
 
+// ---- Graph visualization data ----
+
+export interface GraphNodeData {
+  [key: string]: unknown;
+  id: string;
+  nodeType: string;
+  label: string;
+  slug?: string;
+  description?: string;
+  meta?: Record<string, unknown>;
+}
+
+export interface GraphData {
+  nodes: GraphNodeData[];
+  edges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    edgeType: string;
+    label: string;
+    weight: number;
+  }>;
+}
+
+function collectEntityIds(edges: GraphEdge[]): Record<string, Set<string>> {
+  const ids: Record<string, Set<string>> = {};
+  for (const edge of edges) {
+    if (!ids[edge.source_type]) ids[edge.source_type] = new Set();
+    if (!ids[edge.target_type]) ids[edge.target_type] = new Set();
+    ids[edge.source_type].add(edge.source_id);
+    ids[edge.target_type].add(edge.target_id);
+  }
+  return ids;
+}
+
+export async function getGraphData(): Promise<GraphData> {
+  const supabase = await createClient();
+
+  // 1. Fetch all visible edges (RLS handles visibility)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: edgesRaw } = (await (supabase.from('graph_edges') as any)
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(500)) as { data: GraphEdge[] | null };
+
+  const rawEdges = edgesRaw ?? [];
+  if (rawEdges.length === 0) {
+    return { nodes: [], edges: [] };
+  }
+
+  // 2. Collect unique entity IDs by type
+  const entityIds = collectEntityIds(rawEdges);
+
+  // 3. Fetch entity details in parallel
+  const nodeMap: Record<string, GraphNodeData> = {};
+
+  const fetchEntities = async (type: string, ids: Set<string>) => {
+    const idArr = Array.from(ids);
+    if (idArr.length === 0) return;
+
+    const table =
+      type === 'profile'
+        ? 'profiles'
+        : type === 'project'
+          ? 'projects'
+          : type === 'organization'
+            ? 'organizations'
+            : type === 'concept'
+              ? 'concepts'
+              : 'calls';
+
+    const selectFields =
+      type === 'profile'
+        ? 'id, display_name, username, role, avatar_url'
+        : type === 'call'
+          ? 'id, title, status, scheduled_at'
+          : type === 'concept'
+            ? 'id, name, slug, description, is_canonical'
+            : 'id, name, slug, description';
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = (await supabase
+      .from(table)
+      .select(selectFields)
+      .in('id', idArr)) as { data: any[] | null };
+
+    for (const item of data ?? []) {
+      const label =
+        type === 'profile'
+          ? item.display_name || `@${item.username}`
+          : type === 'call'
+            ? item.title
+            : item.name;
+
+      nodeMap[item.id] = {
+        id: item.id,
+        nodeType: type,
+        label,
+        slug: type === 'profile' ? item.username : item.slug,
+        description: item.description,
+        meta: item,
+      };
+    }
+  };
+
+  await Promise.all(
+    Object.entries(entityIds).map(([type, ids]) => fetchEntities(type, ids)),
+  );
+
+  // 4. Build nodes array (only entities that were actually fetched)
+  const nodes = Object.values(nodeMap);
+
+  // 5. Build edges array (only edges where both endpoints exist)
+  const nodeIdSet = new Set(nodes.map((n) => n.id));
+  const edges = rawEdges
+    .filter((e) => nodeIdSet.has(e.source_id) && nodeIdSet.has(e.target_id))
+    .map((e) => ({
+      id: e.id,
+      source: e.source_id,
+      target: e.target_id,
+      edgeType: e.edge_type,
+      label: e.edge_type.replace(/_/g, ' '),
+      weight: e.weight,
+    }));
+
+  return { nodes, edges };
+}
+
+// ---- Helpers ----
+
 async function resolveEdgeNames(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
