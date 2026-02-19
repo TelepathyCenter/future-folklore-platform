@@ -67,16 +67,28 @@ See `DEVELOPMENT_OUTLINE.yaml` in the project's Claude Code config for the full 
 
 - **Layer 0.1** — Repo, monorepo scaffold, CI (commit `ad8a762`)
 - **Layer 0.2** — Supabase project, base schema migration, auth clients, generated types (commit `7a53917`)
+- **Step 0.3** — Hosting pipeline: vercel.json, railway.toml, CORS config, Dockerfile.web fix (commit `38b741a`)
+- **Step 0.4** — Design system: Tailwind v4, shadcn/ui primitives, branded landing page, layout shell (commit `5edc6b3`)
+- **Step 1.1** — Auth + profiles: email/password + OAuth sign-in, profile view/edit, community directory with search/filter
 
 ### Next Up
 
-- **Layer 1.1** — Supabase Auth (email/password + Google/GitHub OAuth)
-- **Layer 1.2** — Community profile pages (view/edit)
 - **Layer 1.3** — Project directory (browse, detail pages)
 - **Layer 1.4** — Weekly calls (scheduling, notes)
+- **Layer 2** — Blockchain timestamping, knowledge graph
+
+## Design System
+
+- **CSS**: Tailwind v4 with `@theme` block (deep space + amber gold + electric blue palette)
+- **Components**: shadcn/ui pattern (CVA + Radix primitives) — button, input, label, card, avatar, separator, badge, toast
+- **Layout**: AppShell (top-nav + sidebar + main), PageContainer
+- **Font**: Inter (Google Fonts CDN)
+- **Auth**: Supabase SSR cookie pattern, Server Actions, middleware route protection
 
 ## Known Issues
 
 - Next.js 16 warns about `middleware.ts` deprecation (use `proxy` instead) — Supabase SSR hasn't updated yet, safe to ignore for now
 - `@supabase/ssr` `setAll` callback needs explicit typing in strict TypeScript mode
 - `nx sync` must be run after adding new workspace dependencies
+- Supabase PostgREST v14 types cause `never` inference on `.update().eq()` chains — use `as any` on `supabase.from()` as workaround
+- OAuth providers (Google/GitHub) must be enabled manually in Supabase dashboard

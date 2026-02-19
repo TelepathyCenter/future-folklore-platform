@@ -9,8 +9,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { OAuthButtons } from '@/components/auth/oauth-buttons';
+import { signIn } from '@/lib/auth/actions';
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; next?: string; success?: string }>;
+}) {
+  const params = await searchParams;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-void p-4">
       <Card className="w-full max-w-md">
@@ -21,26 +30,59 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              disabled
+          {params.error && (
+            <p className="rounded-md bg-error/10 p-3 text-sm text-error">
+              {params.error}
+            </p>
+          )}
+          {params.success && (
+            <p className="rounded-md bg-success/10 p-3 text-sm text-success">
+              {params.success}
+            </p>
+          )}
+          <OAuthButtons />
+          <div className="relative">
+            <Separator />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-void-light px-2 text-xs text-ash">
+              or
+            </span>
+          </div>
+          <form action={signIn} className="space-y-4">
+            <input
+              type="hidden"
+              name="next"
+              value={params.next ?? '/dashboard'}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" disabled />
-          </div>
-          <Button className="w-full" disabled>
-            Sign in
-          </Button>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-electric hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <Input id="password" name="password" type="password" required />
+            </div>
+            <Button className="w-full" type="submit">
+              Sign in
+            </Button>
+          </form>
           <p className="text-center text-xs text-ash">
-            Auth coming in Step 1.1.{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/register" className="text-electric hover:underline">
-              Create an account
+              Create one
             </Link>
           </p>
         </CardContent>

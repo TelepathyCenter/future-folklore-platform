@@ -6,3 +6,10 @@
  */
 
 export const APP_NAME = 'Future Folklore Platform';
+
+export {
+  PROFILE_ROLES,
+  PROFILE_VISIBILITIES,
+  PROFILE_ROLE_LABELS,
+} from './profile';
+export type { ProfileRole, ProfileVisibility } from './profile';
