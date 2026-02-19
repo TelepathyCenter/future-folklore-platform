@@ -51,3 +51,7 @@ jobs:
 
       - name: Test (Python)
         run: pnpm exec nx run api:test
+
+      # Deployment notes (for reference — actual deploys are handled by Vercel/Railway)
+      # Frontend: Vercel auto-deploys from main via GitHub App. Preview deploys on PRs.
+      # Backend: Railway auto-deploys from main. Uses infra/Dockerfile.api.

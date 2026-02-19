@@ -4,11 +4,23 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@9 --activate
 
-COPY apps/web/package.json .
+# Copy workspace manifests for pnpm monorepo resolution
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml .npmrc ./
+COPY apps/web/package.json apps/web/package.json
+COPY packages/db/package.json packages/db/package.json
+COPY packages/shared/package.json packages/shared/package.json
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
-COPY apps/web/ .
+# Copy source files
+COPY apps/web/ apps/web/
+COPY packages/db/ packages/db/
+COPY packages/shared/ packages/shared/
+
+# Nx and root configs needed for build
+COPY nx.json tsconfig.base.json tsconfig.json eslint.config.mjs ./
+
+WORKDIR /app/apps/web
 
 EXPOSE 3000
 
