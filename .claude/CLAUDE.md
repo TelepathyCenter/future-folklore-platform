@@ -69,7 +69,8 @@ See `DEVELOPMENT_OUTLINE.yaml` in the project's Claude Code config for the full 
 - **Layer 0.2** — Supabase project, base schema migration, auth clients, generated types (commit `7a53917`)
 - **Step 0.3** — Hosting pipeline: vercel.json, railway.toml, CORS config, Dockerfile.web fix (commit `38b741a`)
 - **Step 0.4** — Design system: Tailwind v4, shadcn/ui primitives, branded landing page, layout shell (commit `5edc6b3`)
-- **Step 1.1** — Auth + profiles: email/password + OAuth sign-in, profile view/edit, community directory with search/filter
+- **Step 1.1** — Auth + profiles: email/password + OAuth sign-in, profile view/edit, community directory with search/filter (commit `30e066a`)
+- **Deployment** — Vercel (frontend) + Railway (backend) + Supabase OAuth (Google/GitHub) live (commit `1204ffe`)
 
 ### Next Up
 
@@ -85,10 +86,17 @@ See `DEVELOPMENT_OUTLINE.yaml` in the project's Claude Code config for the full 
 - **Font**: Inter (Google Fonts CDN)
 - **Auth**: Supabase SSR cookie pattern, Server Actions, middleware route protection
 
+## Hosting
+
+- **Frontend**: Vercel — https://future-folklore-platform.vercel.app (GitHub auto-deploys enabled)
+- **Backend**: Railway — https://api-production-0d93.up.railway.app (project: `c03446ae-721b-4bf6-ab71-a830e896da1a`, service: `api`)
+- **Auth**: Supabase Auth with Google + GitHub OAuth enabled
+- **CORS_ORIGINS** env var must be JSON array format (pydantic-settings v2 requirement): `["https://...", "http://..."]`
+- `railway.toml` must be at repo root (not in `apps/api/`) for Railway to detect it
+
 ## Known Issues
 
 - Next.js 16 warns about `middleware.ts` deprecation (use `proxy` instead) — Supabase SSR hasn't updated yet, safe to ignore for now
 - `@supabase/ssr` `setAll` callback needs explicit typing in strict TypeScript mode
 - `nx sync` must be run after adding new workspace dependencies
 - Supabase PostgREST v14 types cause `never` inference on `.update().eq()` chains — use `as any` on `supabase.from()` as workaround
-- OAuth providers (Google/GitHub) must be enabled manually in Supabase dashboard
