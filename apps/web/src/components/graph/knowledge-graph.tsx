@@ -28,6 +28,16 @@ import type { GraphData, GraphNodeData } from '@/lib/queries/graph';
 
 const STORAGE_KEY = 'ff-knowledge-graph-layout';
 
+function readSavedPositions(): Record<string, { x: number; y: number }> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return {};
+  }
+}
+
 const nodeTypes = {
   concept: ConceptNode,
   profile: ProfileNode,
@@ -54,10 +64,7 @@ function KnowledgeGraphInner({ data }: KnowledgeGraphProps) {
   useEffect(() => {
     if (data.nodes.length === 0 || isLayoutReady) return;
 
-    const savedLayout = localStorage.getItem(STORAGE_KEY);
-    const savedPositions: Record<string, { x: number; y: number }> = savedLayout
-      ? JSON.parse(savedLayout)
-      : {};
+    const savedPositions = readSavedPositions();
 
     const rowLength = Math.max(Math.ceil(Math.sqrt(data.nodes.length)), 1);
 
@@ -92,8 +99,7 @@ function KnowledgeGraphInner({ data }: KnowledgeGraphProps) {
 
   // Save node positions on drag stop
   const onNodeDragStop = useCallback((_: React.MouseEvent, node: Node) => {
-    const savedLayout = localStorage.getItem(STORAGE_KEY);
-    const savedPositions = savedLayout ? JSON.parse(savedLayout) : {};
+    const savedPositions = readSavedPositions();
     savedPositions[node.id] = node.position;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(savedPositions));
   }, []);

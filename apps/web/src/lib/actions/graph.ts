@@ -4,6 +4,13 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import type { TablesInsert } from '@future-folklore-platform/db';
+import { NODE_TYPES, EDGE_TYPES } from '@future-folklore-platform/shared';
+import type { NodeType, EdgeType } from '@future-folklore-platform/shared';
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const nodeTypeSet = new Set<string>(NODE_TYPES);
+const edgeTypeSet = new Set<string>(EDGE_TYPES);
 
 function slugify(name: string): string {
   return name
@@ -80,13 +87,32 @@ export async function updateConcept(id: string, formData: FormData) {
 
   const slug = slugify(name);
 
+  // Verify ownership — only creator can update non-canonical concepts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: existing } = (await (supabase.from('concepts') as any)
+    .select('created_by, is_canonical')
+    .eq('id', id)
+    .single()) as {
+    data: { created_by: string; is_canonical: boolean } | null;
+  };
+
+  if (!existing) {
+    return { error: 'Concept not found' };
+  }
+  if (existing.is_canonical) {
+    return { error: 'Canonical concepts cannot be edited' };
+  }
+  if (existing.created_by !== user.id) {
+    return { error: 'You can only edit concepts you created' };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('concepts') as any)
     .update({ name, slug, description, parent_id: parentId })
     .eq('id', id);
 
   if (error) {
-    return { error: error.message };
+    return { error: 'Failed to update concept' };
   }
 
   revalidatePath('/graph/concepts');
@@ -113,12 +139,26 @@ export async function createEdge(formData: FormData) {
     return { error: 'All fields are required' };
   }
 
+  // Runtime validation — enum and UUID checks
+  if (!nodeTypeSet.has(sourceType)) {
+    return { error: 'Invalid source type' };
+  }
+  if (!nodeTypeSet.has(targetType)) {
+    return { error: 'Invalid target type' };
+  }
+  if (!edgeTypeSet.has(edgeType)) {
+    return { error: 'Invalid edge type' };
+  }
+  if (!UUID_RE.test(sourceId) || !UUID_RE.test(targetId)) {
+    return { error: 'Invalid entity ID' };
+  }
+
   const insert: TablesInsert<'graph_edges'> = {
-    source_type: sourceType as TablesInsert<'graph_edges'>['source_type'],
+    source_type: sourceType as NodeType,
     source_id: sourceId,
-    target_type: targetType as TablesInsert<'graph_edges'>['target_type'],
+    target_type: targetType as NodeType,
     target_id: targetId,
-    edge_type: edgeType as TablesInsert<'graph_edges'>['edge_type'],
+    edge_type: edgeType as EdgeType,
     notes,
     created_by: user.id,
   };
@@ -128,7 +168,9 @@ export async function createEdge(formData: FormData) {
 
   if (error) {
     const msg =
-      error.code === '23505' ? 'This connection already exists' : error.message;
+      error.code === '23505'
+        ? 'This connection already exists'
+        : 'Failed to create connection';
     return { error: msg };
   }
 
@@ -145,13 +187,31 @@ export async function deleteEdge(id: string) {
 
   if (!user) return redirect('/login');
 
+  if (!UUID_RE.test(id)) {
+    return { error: 'Invalid edge ID' };
+  }
+
+  // Verify ownership before deleting
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: existing } = (await (supabase.from('graph_edges') as any)
+    .select('created_by')
+    .eq('id', id)
+    .single()) as { data: { created_by: string } | null };
+
+  if (!existing) {
+    return { error: 'Connection not found' };
+  }
+  if (existing.created_by !== user.id) {
+    return { error: 'You can only delete connections you created' };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase.from('graph_edges') as any)
     .delete()
     .eq('id', id);
 
   if (error) {
-    return { error: error.message };
+    return { error: 'Failed to delete connection' };
   }
 
   revalidatePath('/graph');

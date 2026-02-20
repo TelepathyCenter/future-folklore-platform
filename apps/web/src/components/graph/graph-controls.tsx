@@ -3,7 +3,6 @@
 import { Maximize, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NODE_TYPE_LABELS } from '@future-folklore-platform/shared';
-import type { NodeType } from '@future-folklore-platform/shared';
 import { cn } from '@/lib/utils';
 
 const NODE_TYPE_ICON_COLORS: Record<string, string> = {
@@ -81,8 +80,7 @@ export function GraphControls({
                 : 'border-void-border bg-void text-ash-dark opacity-50',
             )}
           >
-            {label}
-            {label !== NODE_TYPE_LABELS[type as NodeType] ? '' : 's'}
+            {label}s
           </button>
         ))}
       </div>
