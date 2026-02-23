@@ -169,7 +169,15 @@ export interface GraphData {
     edgeType: string;
     label: string;
     weight: number;
+    created_by: string | null;
   }>;
+}
+
+export interface EntitySearchResult {
+  id: string;
+  nodeType: string;
+  label: string;
+  slug?: string;
 }
 
 function collectEntityIds(edges: GraphEdge[]): Record<string, Set<string>> {
@@ -271,9 +279,111 @@ export async function getGraphData(): Promise<GraphData> {
       edgeType: e.edge_type,
       label: e.edge_type.replace(/_/g, ' '),
       weight: e.weight,
+      created_by: e.created_by,
     }));
 
   return { nodes, edges };
+}
+
+// ---- Entity search ----
+
+export async function searchEntities(
+  query: string,
+  nodeTypes?: string[],
+  limit = 10,
+): Promise<EntitySearchResult[]> {
+  const supabase = await createClient();
+  const pattern = `%${query}%`;
+  const results: EntitySearchResult[] = [];
+
+  const types = nodeTypes ?? [
+    'profile',
+    'project',
+    'organization',
+    'concept',
+    'call',
+  ];
+
+  const searches = types.map(async (type) => {
+    if (type === 'profile') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = (await (supabase.from('profiles') as any)
+        .select('id, display_name, username')
+        .or(`display_name.ilike.${pattern},username.ilike.${pattern}`)
+        .limit(limit)) as { data: any[] | null };
+
+      for (const item of data ?? []) {
+        results.push({
+          id: item.id,
+          nodeType: 'profile',
+          label: item.display_name || `@${item.username}`,
+          slug: item.username,
+        });
+      }
+    } else if (type === 'project') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = (await (supabase.from('projects') as any)
+        .select('id, name, slug')
+        .ilike('name', pattern)
+        .limit(limit)) as { data: any[] | null };
+
+      for (const item of data ?? []) {
+        results.push({
+          id: item.id,
+          nodeType: 'project',
+          label: item.name,
+          slug: item.slug,
+        });
+      }
+    } else if (type === 'organization') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = (await (supabase.from('organizations') as any)
+        .select('id, name, slug')
+        .ilike('name', pattern)
+        .limit(limit)) as { data: any[] | null };
+
+      for (const item of data ?? []) {
+        results.push({
+          id: item.id,
+          nodeType: 'organization',
+          label: item.name,
+          slug: item.slug,
+        });
+      }
+    } else if (type === 'concept') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = (await (supabase.from('concepts') as any)
+        .select('id, name, slug')
+        .ilike('name', pattern)
+        .limit(limit)) as { data: any[] | null };
+
+      for (const item of data ?? []) {
+        results.push({
+          id: item.id,
+          nodeType: 'concept',
+          label: item.name,
+          slug: item.slug,
+        });
+      }
+    } else if (type === 'call') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = (await (supabase.from('calls') as any)
+        .select('id, title')
+        .ilike('title', pattern)
+        .limit(limit)) as { data: any[] | null };
+
+      for (const item of data ?? []) {
+        results.push({
+          id: item.id,
+          nodeType: 'call',
+          label: item.title,
+        });
+      }
+    }
+  });
+
+  await Promise.all(searches);
+  return results.slice(0, limit);
 }
 
 // ---- Helpers ----

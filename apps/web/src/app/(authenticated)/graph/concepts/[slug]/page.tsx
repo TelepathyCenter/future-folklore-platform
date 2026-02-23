@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Tag, Network } from 'lucide-react';
+import { ArrowLeft, Tag, Network, Plus } from 'lucide-react';
 import { PageContainer } from '@/components/layout/page-container';
 import {
   Card,
@@ -9,13 +9,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { getConcept } from '@/lib/queries/graph';
+import { createClient } from '@/lib/supabase/server';
 import {
   EDGE_TYPE_LABELS,
   EDGE_TYPE_BADGE_VARIANT,
   NODE_TYPE_LABELS,
 } from '@future-folklore-platform/shared';
 import type { NodeType, EdgeType } from '@future-folklore-platform/shared';
+import { EdgeCreatorModal } from '@/components/graph/edge-creator-modal';
+import { EdgeDeleteButton } from '@/components/graph/edge-delete-button';
 
 interface ConceptDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -29,24 +33,46 @@ export default async function ConceptDetailPage({
 
   if (!concept) return notFound();
 
-  const entityLink = (type: string, slug?: string, id?: string) => {
-    if (type === 'concept' && slug) return `/graph/concepts/${slug}`;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const entityLink = (type: string, entitySlug?: string, id?: string) => {
+    if (type === 'concept' && entitySlug) return `/graph/concepts/${entitySlug}`;
     if (type === 'project' && id) return `/projects/${id}`;
-    if (type === 'profile' && slug) return `/profile/${slug}`;
+    if (type === 'profile' && entitySlug) return `/profile/${entitySlug}`;
     if (type === 'call' && id) return `/calls/${id}`;
     return null;
+  };
+
+  const conceptPreset = {
+    id: concept.id,
+    nodeType: 'concept' as const,
+    label: concept.name,
   };
 
   return (
     <PageContainer>
       <div className="space-y-6">
-        <Link
-          href="/graph/concepts"
-          className="inline-flex items-center text-sm text-ash hover:text-white"
-        >
-          <ArrowLeft className="mr-1 h-4 w-4" />
-          Back to Concepts
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/graph/concepts"
+            className="inline-flex items-center text-sm text-ash hover:text-white"
+          >
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            Back to Concepts
+          </Link>
+          <EdgeCreatorModal
+            trigger={
+              <Button variant="outline" size="sm">
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add Connection
+              </Button>
+            }
+            presetSource={conceptPreset}
+          />
+        </div>
 
         <div className="space-y-2">
           <div className="flex items-center gap-3">
@@ -118,6 +144,7 @@ export default async function ConceptDetailPage({
                     edge.resolved_slug,
                     otherId,
                   );
+                  const canDelete = user && edge.created_by === user.id;
 
                   return (
                     <div
@@ -148,9 +175,12 @@ export default async function ConceptDetailPage({
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-ash">
-                        {NODE_TYPE_LABELS[otherType as NodeType]}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-ash">
+                          {NODE_TYPE_LABELS[otherType as NodeType]}
+                        </span>
+                        {canDelete && <EdgeDeleteButton edgeId={edge.id} />}
+                      </div>
                     </div>
                   );
                 })}

@@ -1,11 +1,13 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Plus } from 'lucide-react';
 import { PageContainer } from '@/components/layout/page-container';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { getProject } from '@/lib/queries/projects';
+import { EdgeCreatorModal } from '@/components/graph/edge-creator-modal';
 import {
   PROJECT_STATUS_LABELS,
   PROJECT_STATUS_BADGE_VARIANT,
@@ -27,6 +29,12 @@ export default async function ProjectDetailPage({
 
   const org = project.organizations;
 
+  const projectPreset = {
+    id: project.id,
+    nodeType: 'project' as const,
+    label: project.name,
+  };
+
   return (
     <PageContainer>
       <div className="space-y-6">
@@ -35,9 +43,20 @@ export default async function ProjectDetailPage({
             <h1 className="text-2xl font-bold text-white">{project.name}</h1>
             <p className="text-sm text-ash">{org.name}</p>
           </div>
-          <Badge variant={PROJECT_STATUS_BADGE_VARIANT[project.status]}>
-            {PROJECT_STATUS_LABELS[project.status]}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <EdgeCreatorModal
+              trigger={
+                <Button variant="outline" size="sm">
+                  <Plus className="mr-1.5 h-3.5 w-3.5" />
+                  Add Connection
+                </Button>
+              }
+              presetSource={projectPreset}
+            />
+            <Badge variant={PROJECT_STATUS_BADGE_VARIANT[project.status]}>
+              {PROJECT_STATUS_LABELS[project.status]}
+            </Badge>
+          </div>
         </div>
 
         <Separator />

@@ -48,9 +48,10 @@ const nodeTypes = {
 
 interface KnowledgeGraphProps {
   data: GraphData;
+  currentUserId?: string;
 }
 
-function KnowledgeGraphInner({ data }: KnowledgeGraphProps) {
+function KnowledgeGraphInner({ data, currentUserId }: KnowledgeGraphProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { fitView } = useReactFlow();
@@ -208,16 +209,17 @@ function KnowledgeGraphInner({ data }: KnowledgeGraphProps) {
           )}
           allNodes={data.nodes}
           onClose={() => setSelectedNode(null)}
+          currentUserId={currentUserId}
         />
       )}
     </div>
   );
 }
 
-export function KnowledgeGraph({ data }: KnowledgeGraphProps) {
+export function KnowledgeGraph({ data, currentUserId }: KnowledgeGraphProps) {
   return (
     <ReactFlowProvider>
-      <KnowledgeGraphInner data={data} />
+      <KnowledgeGraphInner data={data} currentUserId={currentUserId} />
     </ReactFlowProvider>
   );
 }

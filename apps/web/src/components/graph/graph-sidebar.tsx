@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { X, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,12 +10,18 @@ import {
 } from '@future-folklore-platform/shared';
 import type { NodeType, EdgeType } from '@future-folklore-platform/shared';
 import type { GraphData, GraphNodeData } from '@/lib/queries/graph';
+import { EdgeDeleteButton } from '@/components/graph/edge-delete-button';
+import {
+  EdgeCreatorModal,
+  type EntityPreset,
+} from '@/components/graph/edge-creator-modal';
 
 interface GraphSidebarProps {
   node: GraphNodeData;
   edges: GraphData['edges'];
   allNodes: GraphNodeData[];
   onClose: () => void;
+  currentUserId?: string;
 }
 
 function getEntityLink(node: GraphNodeData): string | null {
@@ -32,9 +38,16 @@ export function GraphSidebar({
   edges,
   allNodes,
   onClose,
+  currentUserId,
 }: GraphSidebarProps) {
   const link = getEntityLink(node);
   const nodeMap = new Map(allNodes.map((n) => [n.id, n]));
+
+  const sourcePreset: EntityPreset = {
+    id: node.id,
+    nodeType: node.nodeType as NodeType,
+    label: node.label,
+  };
 
   return (
     <div className="absolute right-0 top-0 z-10 flex h-full w-80 flex-col border-l border-void-border bg-void-light/95 shadow-2xl backdrop-blur-sm">
@@ -80,6 +93,8 @@ export function GraphSidebar({
                   const isSource = edge.source === node.id;
                   const otherId = isSource ? edge.target : edge.source;
                   const otherNode = nodeMap.get(otherId);
+                  const canDelete =
+                    currentUserId && edge.created_by === currentUserId;
 
                   return (
                     <div
@@ -89,9 +104,10 @@ export function GraphSidebar({
                       <Badge variant="outline" className="shrink-0 text-[10px]">
                         {EDGE_TYPE_LABELS[edge.edgeType as EdgeType]}
                       </Badge>
-                      <span className="truncate text-xs text-ash-light">
+                      <span className="flex-1 truncate text-xs text-ash-light">
                         {otherNode?.label ?? 'Unknown'}
                       </span>
+                      {canDelete && <EdgeDeleteButton edgeId={edge.id} />}
                     </div>
                   );
                 })}
@@ -104,6 +120,16 @@ export function GraphSidebar({
               No connections from this node
             </p>
           )}
+
+          <EdgeCreatorModal
+            trigger={
+              <Button variant="outline" size="sm" className="w-full">
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
+                Add Connection
+              </Button>
+            }
+            presetSource={sourcePreset}
+          />
         </div>
       </div>
     </div>

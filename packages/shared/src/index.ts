@@ -47,5 +47,7 @@ export {
   EDGE_TYPE_LABELS,
   EDGE_TYPE_DESCRIPTIONS,
   EDGE_TYPE_BADGE_VARIANT,
+  EDGE_TYPE_RULES,
+  getValidEdgeTypes,
 } from './graph';
 export type { NodeType, EdgeType } from './graph';

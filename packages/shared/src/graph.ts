@@ -96,3 +96,42 @@ export const EDGE_TYPE_BADGE_VARIANT: Record<
   discussed_in: 'electric',
   presented_at: 'default',
 };
+
+/**
+ * Validity rules for each edge type: which node types can be source/target.
+ */
+export const EDGE_TYPE_RULES: Record<
+  EdgeType,
+  { source: readonly NodeType[]; target: readonly NodeType[] }
+> = {
+  works_on: { source: ['profile'], target: ['project'] },
+  member_of: { source: ['profile'], target: ['organization'] },
+  interested_in: { source: ['profile'], target: ['concept'] },
+  expert_in: { source: ['profile'], target: ['concept'] },
+  mentors: { source: ['profile'], target: ['profile'] },
+  collaborates_with: { source: ['profile'], target: ['profile'] },
+  explores: { source: ['project'], target: ['concept'] },
+  funded_by: { source: ['project'], target: ['organization'] },
+  builds_on: { source: ['project'], target: ['project'] },
+  related_to: {
+    source: ['profile', 'project', 'organization', 'concept', 'call'],
+    target: ['profile', 'project', 'organization', 'concept', 'call'],
+  },
+  subtopic_of: { source: ['concept'], target: ['concept'] },
+  related_concept: { source: ['concept'], target: ['concept'] },
+  discussed_in: { source: ['concept'], target: ['call'] },
+  presented_at: { source: ['profile'], target: ['call'] },
+};
+
+/**
+ * Returns valid edge types for a given source→target node type pair.
+ */
+export function getValidEdgeTypes(
+  sourceType: NodeType,
+  targetType: NodeType,
+): EdgeType[] {
+  return EDGE_TYPES.filter((edgeType) => {
+    const rule = EDGE_TYPE_RULES[edgeType];
+    return rule.source.includes(sourceType) && rule.target.includes(targetType);
+  });
+}
