@@ -40,6 +40,13 @@ export {
 export type { CallStatus, RsvpStatus } from './call';
 
 export {
+  MILESTONE_STATUSES,
+  MILESTONE_STATUS_LABELS,
+  MILESTONE_STATUS_BADGE_VARIANT,
+} from './milestone';
+export type { MilestoneStatus } from './milestone';
+
+export {
   NODE_TYPES,
   NODE_TYPE_LABELS,
   NODE_TYPE_COLORS,

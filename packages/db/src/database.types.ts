@@ -371,6 +371,72 @@ export type Database = {
         };
         Relationships: [];
       };
+      project_milestones: {
+        Row: {
+          anchor_chain: string | null;
+          anchored_at: string | null;
+          content_hash: string;
+          created_at: string;
+          created_by: string;
+          description: string | null;
+          evidence_url: string | null;
+          hash_algorithm: string;
+          id: string;
+          project_id: string;
+          proof_tx: string | null;
+          status: Database['public']['Enums']['milestone_status'];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          anchor_chain?: string | null;
+          anchored_at?: string | null;
+          content_hash: string;
+          created_at?: string;
+          created_by: string;
+          description?: string | null;
+          evidence_url?: string | null;
+          hash_algorithm?: string;
+          id?: string;
+          project_id: string;
+          proof_tx?: string | null;
+          status?: Database['public']['Enums']['milestone_status'];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          anchor_chain?: string | null;
+          anchored_at?: string | null;
+          content_hash?: string;
+          created_at?: string;
+          created_by?: string;
+          description?: string | null;
+          evidence_url?: string | null;
+          hash_algorithm?: string;
+          id?: string;
+          project_id?: string;
+          proof_tx?: string | null;
+          status?: Database['public']['Enums']['milestone_status'];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'project_milestones_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'project_milestones_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       projects: {
         Row: {
           created_at: string;
@@ -457,6 +523,7 @@ export type Database = {
         | 'discussed_in'
         | 'presented_at';
       membership_role: 'lead' | 'member' | 'advisor' | 'observer';
+      milestone_status: 'recorded' | 'anchored' | 'verified';
       node_type: 'profile' | 'project' | 'organization' | 'concept' | 'call';
       profile_role:
         | 'researcher'
@@ -616,6 +683,7 @@ export const Constants = {
         'presented_at',
       ],
       membership_role: ['lead', 'member', 'advisor', 'observer'],
+      milestone_status: ['recorded', 'anchored', 'verified'],
       node_type: ['profile', 'project', 'organization', 'concept', 'call'],
       profile_role: [
         'researcher',

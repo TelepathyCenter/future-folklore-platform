@@ -6,8 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { createClient } from '@/lib/supabase/server';
 import { getProject } from '@/lib/queries/projects';
+import { listProjectMilestones } from '@/lib/queries/milestones';
 import { EdgeCreatorModal } from '@/components/graph/edge-creator-modal';
+import { MilestonePanel } from '@/components/project/milestone-panel';
 import {
   PROJECT_STATUS_LABELS,
   PROJECT_STATUS_BADGE_VARIANT,
@@ -21,11 +24,23 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const project = await getProject(id);
+  const [project, milestones, supabase] = await Promise.all([
+    getProject(id),
+    listProjectMilestones(id),
+    createClient(),
+  ]);
 
   if (!project) {
     return notFound();
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isMember = project.memberships.some(
+    (m) => m.profile_id === user?.id,
+  );
 
   const org = project.organizations;
 
@@ -136,6 +151,14 @@ export default async function ProjectDetailPage({
                 </div>
               </div>
             )}
+
+            <Separator />
+
+            <MilestonePanel
+              projectId={project.id}
+              milestones={milestones}
+              isMember={isMember}
+            />
           </div>
 
           <div className="space-y-6">
