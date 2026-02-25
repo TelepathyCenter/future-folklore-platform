@@ -54,6 +54,17 @@ export {
 export type { UpdateStatus } from './update';
 
 export {
+  RESOURCE_TYPES,
+  RESOURCE_TYPE_LABELS,
+  RESOURCE_TYPE_BADGE_VARIANT,
+  RESOURCE_TYPE_ICONS,
+  RESOURCE_TYPE_ACCEPT,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_LABEL,
+} from './resource';
+export type { ResourceType } from './resource';
+
+export {
   NODE_TYPES,
   NODE_TYPE_LABELS,
   NODE_TYPE_COLORS,
