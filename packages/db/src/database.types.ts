@@ -437,60 +437,6 @@ export type Database = {
           },
         ];
       };
-      updates: {
-        Row: {
-          body: string | null;
-          created_at: string;
-          created_by: string;
-          id: string;
-          project_id: string | null;
-          published_at: string | null;
-          status: Database['public']['Enums']['update_status'];
-          tags: string[];
-          title: string;
-          updated_at: string;
-        };
-        Insert: {
-          body?: string | null;
-          created_at?: string;
-          created_by: string;
-          id?: string;
-          project_id?: string | null;
-          published_at?: string | null;
-          status?: Database['public']['Enums']['update_status'];
-          tags?: string[];
-          title: string;
-          updated_at?: string;
-        };
-        Update: {
-          body?: string | null;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          project_id?: string | null;
-          published_at?: string | null;
-          status?: Database['public']['Enums']['update_status'];
-          tags?: string[];
-          title?: string;
-          updated_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: 'updates_created_by_fkey';
-            columns: ['created_by'];
-            isOneToOne: false;
-            referencedRelation: 'profiles';
-            referencedColumns: ['id'];
-          },
-          {
-            foreignKeyName: 'updates_project_id_fkey';
-            columns: ['project_id'];
-            isOneToOne: false;
-            referencedRelation: 'projects';
-            referencedColumns: ['id'];
-          },
-        ];
-      };
       projects: {
         Row: {
           created_at: string;
@@ -551,6 +497,178 @@ export type Database = {
           },
         ];
       };
+      resource_versions: {
+        Row: {
+          created_at: string;
+          file_name: string;
+          file_size_bytes: number;
+          id: string;
+          mime_type: string | null;
+          resource_id: string;
+          storage_path: string;
+          upload_notes: string | null;
+          uploaded_by: string;
+          version_number: number;
+        };
+        Insert: {
+          created_at?: string;
+          file_name: string;
+          file_size_bytes?: number;
+          id?: string;
+          mime_type?: string | null;
+          resource_id: string;
+          storage_path: string;
+          upload_notes?: string | null;
+          uploaded_by: string;
+          version_number?: number;
+        };
+        Update: {
+          created_at?: string;
+          file_name?: string;
+          file_size_bytes?: number;
+          id?: string;
+          mime_type?: string | null;
+          resource_id?: string;
+          storage_path?: string;
+          upload_notes?: string | null;
+          uploaded_by?: string;
+          version_number?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'resource_versions_resource_id_fkey';
+            columns: ['resource_id'];
+            isOneToOne: false;
+            referencedRelation: 'resources';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'resource_versions_uploaded_by_fkey';
+            columns: ['uploaded_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      resources: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          current_version_id: string | null;
+          description: string | null;
+          external_url: string | null;
+          id: string;
+          project_id: string;
+          resource_type: Database['public']['Enums']['resource_type'];
+          tags: string[];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          current_version_id?: string | null;
+          description?: string | null;
+          external_url?: string | null;
+          id?: string;
+          project_id: string;
+          resource_type?: Database['public']['Enums']['resource_type'];
+          tags?: string[];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          current_version_id?: string | null;
+          description?: string | null;
+          external_url?: string | null;
+          id?: string;
+          project_id?: string;
+          resource_type?: Database['public']['Enums']['resource_type'];
+          tags?: string[];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'resources_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'resources_current_version_fk';
+            columns: ['current_version_id'];
+            isOneToOne: false;
+            referencedRelation: 'resource_versions';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'resources_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      updates: {
+        Row: {
+          body: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          project_id: string | null;
+          published_at: string | null;
+          status: Database['public']['Enums']['update_status'];
+          tags: string[];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          body?: string | null;
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          project_id?: string | null;
+          published_at?: string | null;
+          status?: Database['public']['Enums']['update_status'];
+          tags?: string[];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          body?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          project_id?: string | null;
+          published_at?: string | null;
+          status?: Database['public']['Enums']['update_status'];
+          tags?: string[];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'updates_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'updates_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -588,6 +706,13 @@ export type Database = {
       profile_visibility: 'public' | 'community' | 'private';
       project_status: 'active' | 'incubating' | 'paused' | 'completed';
       project_visibility: 'public' | 'community' | 'incubator';
+      resource_type:
+        | 'document'
+        | 'image'
+        | 'dataset'
+        | 'video'
+        | 'link'
+        | 'other';
       rsvp_status: 'going' | 'not_going' | 'maybe';
       update_status: 'draft' | 'published';
     };
@@ -750,6 +875,7 @@ export const Constants = {
       profile_visibility: ['public', 'community', 'private'],
       project_status: ['active', 'incubating', 'paused', 'completed'],
       project_visibility: ['public', 'community', 'incubator'],
+      resource_type: ['document', 'image', 'dataset', 'video', 'link', 'other'],
       rsvp_status: ['going', 'not_going', 'maybe'],
       update_status: ['draft', 'published'],
     },

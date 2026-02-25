@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Phone,
   Network,
+  Library,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +17,7 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/directory', label: 'Directory', icon: Users },
   { href: '/projects', label: 'Projects', icon: FolderOpen },
+  { href: '/resources', label: 'Resources', icon: Library },
   { href: '/calls', label: 'Calls', icon: Phone },
   { href: '/graph', label: 'Knowledge', icon: Network },
   { href: '/profile', label: 'Profile', icon: User },

@@ -44,9 +44,10 @@ nx affected -t test # Only test changed projects
 - **Region**: us-east-2
 - **URL**: `https://elndhznjnexzutammxdf.supabase.co`
 - **Org**: The Telepathy Center
-- **Tables**: profiles, organizations, projects, memberships, calls, call_rsvps
-- **Enums**: membership_role, profile_role, profile_visibility, project_status, project_visibility, call_status, rsvp_status
-- **RLS**: 31 policies with tiered access (public/community/incubator)
+- **Tables**: profiles, organizations, projects, memberships, calls, call_rsvps, concepts, graph_edges, project_milestones, updates, resources, resource_versions
+- **Enums**: membership_role, profile_role, profile_visibility, project_status, project_visibility, call_status, rsvp_status, edge_type, node_type, milestone_status, update_status, resource_type
+- **Storage Buckets**: `resources` (private, 50MB limit, 4 RLS policies)
+- **RLS**: 44 policies with tiered access (public/community/incubator)
 - **Trigger**: handle_new_user() auto-creates profile on signup
 - **Types**: Auto-generated via `pnpm db:typegen` or Supabase MCP → `packages/db/src/database.types.ts`
 
@@ -73,10 +74,17 @@ See `DEVELOPMENT_OUTLINE.yaml` in the project's Claude Code config for the full 
 - **Deployment** — Vercel (frontend) + Railway (backend) + Supabase OAuth (Google/GitHub) live (commit `1204ffe`)
 - **Layer 1.3** — Project directory: listing with search/filter (status, domain tags), detail page with team members, project creation form
 - **Layer 1.4** — Calls/events: community + project calls, RSVP (going/maybe/not going), meeting notes, .ics calendar export. Migration `0002_calls_schema.sql` (calls + call_rsvps tables with RLS)
+- **Layer 2.1** — Knowledge graph: concepts + graph_edges tables, force-directed D3 visualization, edge CRUD, auto-generation from memberships/tags. Migration `0003_knowledge_graph.sql`
+- **Layer 2.2** — Blockchain timestamping MVP: project milestones with SHA-256 content hashing, verify button. Migration `0004_project_milestones.sql`
+- **Layer 1.3b** — Updates & activity feed: updates table with draft/published status, dashboard feed, per-project UpdatePanel, Atom RSS feeds. Migration `0005_updates.sql`
+- **Layer 1.5** — Resource library: resources + resource_versions tables, Supabase Storage `resources` bucket (50MB), file upload/versioning/download via signed URLs, `/resources` cross-project listing page, per-project ResourcePanel. Migration `0006_resources.sql`
 
 ### Next Up
 
-- **Layer 2** — Blockchain timestamping, knowledge graph
+- **Layer 1.6** — Investor view
+- **Layer 2.2** — FF-PDS
+- **Layer 2.4** — Experiment coordination
+- **Layer 2.5** — Sensor API
 
 ## Design System
 
