@@ -47,6 +47,13 @@ export {
 export type { MilestoneStatus } from './milestone';
 
 export {
+  UPDATE_STATUSES,
+  UPDATE_STATUS_LABELS,
+  UPDATE_STATUS_BADGE_VARIANT,
+} from './update';
+export type { UpdateStatus } from './update';
+
+export {
   NODE_TYPES,
   NODE_TYPE_LABELS,
   NODE_TYPE_COLORS,

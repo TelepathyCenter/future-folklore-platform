@@ -437,6 +437,60 @@ export type Database = {
           },
         ];
       };
+      updates: {
+        Row: {
+          body: string | null;
+          created_at: string;
+          created_by: string;
+          id: string;
+          project_id: string | null;
+          published_at: string | null;
+          status: Database['public']['Enums']['update_status'];
+          tags: string[];
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          body?: string | null;
+          created_at?: string;
+          created_by: string;
+          id?: string;
+          project_id?: string | null;
+          published_at?: string | null;
+          status?: Database['public']['Enums']['update_status'];
+          tags?: string[];
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          body?: string | null;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          project_id?: string | null;
+          published_at?: string | null;
+          status?: Database['public']['Enums']['update_status'];
+          tags?: string[];
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'updates_created_by_fkey';
+            columns: ['created_by'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'updates_project_id_fkey';
+            columns: ['project_id'];
+            isOneToOne: false;
+            referencedRelation: 'projects';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       projects: {
         Row: {
           created_at: string;
@@ -535,6 +589,7 @@ export type Database = {
       project_status: 'active' | 'incubating' | 'paused' | 'completed';
       project_visibility: 'public' | 'community' | 'incubator';
       rsvp_status: 'going' | 'not_going' | 'maybe';
+      update_status: 'draft' | 'published';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -696,6 +751,7 @@ export const Constants = {
       project_status: ['active', 'incubating', 'paused', 'completed'],
       project_visibility: ['public', 'community', 'incubator'],
       rsvp_status: ['going', 'not_going', 'maybe'],
+      update_status: ['draft', 'published'],
     },
   },
 } as const;

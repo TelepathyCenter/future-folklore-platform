@@ -9,8 +9,10 @@ import { Separator } from '@/components/ui/separator';
 import { createClient } from '@/lib/supabase/server';
 import { getProject } from '@/lib/queries/projects';
 import { listProjectMilestones } from '@/lib/queries/milestones';
+import { listUpdates } from '@/lib/queries/updates';
 import { EdgeCreatorModal } from '@/components/graph/edge-creator-modal';
 import { MilestonePanel } from '@/components/project/milestone-panel';
+import { UpdatePanel } from '@/components/updates/update-panel';
 import {
   PROJECT_STATUS_LABELS,
   PROJECT_STATUS_BADGE_VARIANT,
@@ -24,9 +26,10 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [project, milestones, supabase] = await Promise.all([
+  const [project, milestones, { updates }, supabase] = await Promise.all([
     getProject(id),
     listProjectMilestones(id),
+    listUpdates({ projectId: id }),
     createClient(),
   ]);
 
@@ -151,6 +154,12 @@ export default async function ProjectDetailPage({
                 </div>
               </div>
             )}
+
+            <UpdatePanel
+              projectId={project.id}
+              updates={updates}
+              isMember={isMember}
+            />
 
             <Separator />
 
