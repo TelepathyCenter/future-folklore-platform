@@ -73,6 +73,14 @@ export {
 export type { ResourceType } from './resource';
 
 export {
+  TIMESTAMP_CONTENT_TYPES,
+  ANCHOR_STATUSES,
+  ANCHOR_STATUS_LABELS,
+  ANCHOR_STATUS_BADGE_VARIANT,
+} from './timestamp';
+export type { TimestampContentType, AnchorStatus } from './timestamp';
+
+export {
   NODE_TYPES,
   NODE_TYPE_LABELS,
   NODE_TYPE_COLORS,

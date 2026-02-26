@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      blockchain_timestamps: {
+        Row: {
+          anchor_chain: string | null
+          anchor_status: Database["public"]["Enums"]["anchor_status"]
+          anchor_tx: string | null
+          anchored_at: string | null
+          content_hash: string
+          content_id: string
+          content_type: string
+          created_at: string
+          created_by: string
+          id: string
+        }
+        Insert: {
+          anchor_chain?: string | null
+          anchor_status?: Database["public"]["Enums"]["anchor_status"]
+          anchor_tx?: string | null
+          anchored_at?: string | null
+          content_hash: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          created_by: string
+          id?: string
+        }
+        Update: {
+          anchor_chain?: string | null
+          anchor_status?: Database["public"]["Enums"]["anchor_status"]
+          anchor_tx?: string | null
+          anchored_at?: string | null
+          content_hash?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blockchain_timestamps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       call_rsvps: {
         Row: {
           call_id: string
@@ -738,6 +785,7 @@ export type Database = {
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
+      anchor_status: "pending" | "anchored" | "verified"
       call_status: "scheduled" | "live" | "completed" | "cancelled"
       edge_type:
         | "works_on"
@@ -910,6 +958,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      anchor_status: ["pending", "anchored", "verified"],
       call_status: ["scheduled", "live", "completed", "cancelled"],
       edge_type: [
         "works_on",

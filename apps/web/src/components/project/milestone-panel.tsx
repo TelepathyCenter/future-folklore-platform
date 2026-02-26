@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Loader2,
 } from 'lucide-react';
+import { TimestampBadge } from '@/components/ui/timestamp-badge';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +27,10 @@ import {
   MILESTONE_STATUS_LABELS,
   MILESTONE_STATUS_BADGE_VARIANT,
 } from '@future-folklore-platform/shared';
-import type { MilestoneStatus } from '@future-folklore-platform/shared';
+import type {
+  MilestoneStatus,
+  AnchorStatus,
+} from '@future-folklore-platform/shared';
 import { createMilestone, verifyMilestone } from '@/lib/actions/milestones';
 import type { MilestoneWithCreator } from '@/lib/queries/milestones';
 
@@ -281,8 +285,8 @@ export function MilestonePanel({
                   </div>
                 </div>
 
-                {/* Hash display */}
-                <div className="mt-3 rounded bg-void px-3 py-2">
+                {/* Hash + blockchain anchor display */}
+                <div className="mt-3 rounded bg-void px-3 py-2 space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <p className="text-[10px] font-medium uppercase text-ash">
@@ -294,6 +298,24 @@ export function MilestonePanel({
                     </div>
                     <VerifyButton milestoneId={milestone.id} />
                   </div>
+                  {milestone.blockchainTimestamp && (
+                    <div className="flex items-center gap-2 border-t border-void-border pt-2">
+                      <p className="text-[10px] font-medium uppercase text-ash shrink-0">
+                        Blockchain
+                      </p>
+                      <TimestampBadge
+                        timestampId={milestone.blockchainTimestamp.id}
+                        contentHash={milestone.content_hash}
+                        status={
+                          milestone.blockchainTimestamp
+                            .anchor_status as AnchorStatus
+                        }
+                        anchorChain={milestone.blockchainTimestamp.anchor_chain}
+                        anchorTx={milestone.blockchainTimestamp.anchor_tx}
+                        revalidatePaths={[`/projects/${milestone.project_id}`]}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Footer: creator + evidence + timestamp */}
