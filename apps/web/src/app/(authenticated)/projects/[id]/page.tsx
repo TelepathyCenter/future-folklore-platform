@@ -11,10 +11,12 @@ import { getProject } from '@/lib/queries/projects';
 import { listProjectMilestones } from '@/lib/queries/milestones';
 import { listUpdates } from '@/lib/queries/updates';
 import { listProjectResources } from '@/lib/queries/resources';
+import { listInboundEOIs, getMyEOI } from '@/lib/queries/eoi';
 import { EdgeCreatorModal } from '@/components/graph/edge-creator-modal';
 import { MilestonePanel } from '@/components/project/milestone-panel';
 import { UpdatePanel } from '@/components/updates/update-panel';
 import { ResourcePanel } from '@/components/resources/resource-panel';
+import { FundingPanel } from '@/components/project/funding-panel';
 import {
   PROJECT_STATUS_LABELS,
   PROJECT_STATUS_BADGE_VARIANT,
@@ -48,6 +50,14 @@ export default async function ProjectDetailPage({
   const isMember = project.memberships.some(
     (m) => m.profile_id === user?.id,
   );
+  const isLead = project.memberships.some(
+    (m) => m.profile_id === user?.id && m.role === 'lead',
+  );
+
+  const [inboundEOIs, myEOI] = await Promise.all([
+    isLead ? listInboundEOIs(id) : Promise.resolve([]),
+    !isLead ? getMyEOI(id) : Promise.resolve(null),
+  ]);
 
   const org = project.organizations;
 
@@ -150,7 +160,11 @@ export default async function ProjectDetailPage({
                           </p>
                         </div>
                         <Badge variant="secondary" className="shrink-0">
-                          {MEMBERSHIP_ROLE_LABELS[membership.role as MembershipRole]}
+                          {
+                            MEMBERSHIP_ROLE_LABELS[
+                              membership.role as MembershipRole
+                            ]
+                          }
                         </Badge>
                       </Link>
                     );
@@ -216,7 +230,8 @@ export default async function ProjectDetailPage({
             {project.links &&
               typeof project.links === 'object' &&
               !Array.isArray(project.links) &&
-              Object.keys(project.links as Record<string, string>).length > 0 && (
+              Object.keys(project.links as Record<string, string>).length >
+                0 && (
                 <div>
                   <p className="text-xs font-medium uppercase text-ash">
                     Links
@@ -239,6 +254,17 @@ export default async function ProjectDetailPage({
                   </div>
                 </div>
               )}
+
+            <FundingPanel
+              projectId={project.id}
+              fundingStage={project.funding_stage ?? null}
+              fundingSought={project.funding_sought ?? null}
+              fundingReceived={project.funding_received ?? null}
+              useOfFunds={project.use_of_funds ?? null}
+              isLead={isLead}
+              myEOI={myEOI}
+              inboundEOIs={inboundEOIs}
+            />
           </div>
         </div>
       </div>

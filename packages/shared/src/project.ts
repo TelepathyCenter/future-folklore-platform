@@ -62,3 +62,54 @@ export const MEMBERSHIP_ROLE_LABELS: Record<MembershipRole, string> = {
   advisor: 'Advisor',
   observer: 'Observer',
 };
+
+export const PROJECT_STAGES = [
+  'ideation',
+  'pre-seed',
+  'seed',
+  'series-a',
+  'grant-seeking',
+  'bootstrapped',
+] as const;
+
+export type FundingStage = (typeof PROJECT_STAGES)[number];
+
+export const FUNDING_STAGE_LABELS: Record<FundingStage, string> = {
+  ideation: 'Ideation',
+  'pre-seed': 'Pre-Seed',
+  seed: 'Seed',
+  'series-a': 'Series A',
+  'grant-seeking': 'Grant Seeking',
+  bootstrapped: 'Bootstrapped',
+};
+
+export const FUNDING_STAGE_BADGE_VARIANT: Record<
+  FundingStage,
+  'default' | 'electric' | 'success' | 'warning' | 'secondary' | 'outline'
+> = {
+  ideation: 'outline',
+  'pre-seed': 'electric',
+  seed: 'electric',
+  'series-a': 'default',
+  'grant-seeking': 'warning',
+  bootstrapped: 'success',
+};
+
+export const EOI_STATUSES = ['pending', 'acknowledged', 'declined'] as const;
+
+export type EoiStatus = (typeof EOI_STATUSES)[number];
+
+export const EOI_STATUS_LABELS: Record<EoiStatus, string> = {
+  pending: 'Pending',
+  acknowledged: 'Acknowledged',
+  declined: 'Declined',
+};
+
+export const EOI_STATUS_BADGE_VARIANT: Record<
+  EoiStatus,
+  'secondary' | 'success' | 'destructive'
+> = {
+  pending: 'secondary',
+  acknowledged: 'success',
+  declined: 'destructive',
+};

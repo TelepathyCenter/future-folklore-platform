@@ -22,12 +22,20 @@ export {
   DOMAIN_TAGS,
   MEMBERSHIP_ROLES,
   MEMBERSHIP_ROLE_LABELS,
+  PROJECT_STAGES,
+  FUNDING_STAGE_LABELS,
+  FUNDING_STAGE_BADGE_VARIANT,
+  EOI_STATUSES,
+  EOI_STATUS_LABELS,
+  EOI_STATUS_BADGE_VARIANT,
 } from './project';
 export type {
   ProjectStatus,
   ProjectVisibility,
   DomainTag,
   MembershipRole,
+  FundingStage,
+  EoiStatus,
 } from './project';
 
 export {
