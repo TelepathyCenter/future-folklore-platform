@@ -2,7 +2,9 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { Database } from '@future-folklore-platform/db';
 
-export async function createClient() {
+type DbClient = ReturnType<typeof createServerClient<Database>>;
+
+export async function createClient(): Promise<DbClient> {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(

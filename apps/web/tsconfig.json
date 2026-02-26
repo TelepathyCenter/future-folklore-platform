@@ -48,10 +48,10 @@
   ],
   "references": [
     {
-      "path": "../../packages/db"
+      "path": "../../packages/shared"
     },
     {
-      "path": "../../packages/shared"
+      "path": "../../packages/db"
     }
   ]
 }

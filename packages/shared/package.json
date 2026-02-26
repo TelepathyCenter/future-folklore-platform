@@ -2,6 +2,12 @@
   "name": "@future-folklore-platform/shared",
   "version": "0.0.1",
   "private": true,
+  "exports": {
+    ".": {
+      "@future-folklore-platform/source": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "main": "./src/index.ts",
   "types": "./src/index.ts"
 }
