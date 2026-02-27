@@ -199,7 +199,11 @@ importers:
         specifier: ^2.0.0
         version: 2.76.10
 
-  packages/shared: {}
+  packages/shared:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
 
 packages:
 

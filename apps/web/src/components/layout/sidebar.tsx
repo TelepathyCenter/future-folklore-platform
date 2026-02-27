@@ -11,6 +11,7 @@ import {
   Network,
   Library,
   TrendingUp,
+  FlaskConical,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +22,7 @@ const navItems = [
   { href: '/resources', label: 'Resources', icon: Library },
   { href: '/calls', label: 'Calls', icon: Phone },
   { href: '/graph', label: 'Knowledge', icon: Network },
+  { href: '/pds', label: 'Reports', icon: FlaskConical },
   { href: '/investor', label: 'Investor', icon: TrendingUp },
   { href: '/profile', label: 'Profile', icon: User },
 ];

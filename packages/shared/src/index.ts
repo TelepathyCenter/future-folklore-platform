@@ -81,6 +81,23 @@ export {
 export type { TimestampContentType, AnchorStatus } from './timestamp';
 
 export {
+  RapidCaptureSchema,
+  DetailedCaptureSchema,
+  SensoryDataSchema,
+  SensoryChannelSchema,
+  SENSORY_CHANNELS,
+} from './pds';
+export type {
+  RapidCaptureInput,
+  DetailedCaptureInput,
+  SensoryData,
+  SensoryChannel,
+  SensoryChannel_Key,
+  PdsReport,
+  PdsListFilters,
+} from './pds';
+
+export {
   NODE_TYPES,
   NODE_TYPE_LABELS,
   NODE_TYPE_COLORS,

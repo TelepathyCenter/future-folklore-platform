@@ -421,6 +421,97 @@ export type Database = {
           },
         ]
       }
+      phenomenological_reports: {
+        Row: {
+          author_id: string
+          blockchain_timestamp_id: string | null
+          capture_mode: string
+          confidence: number
+          content_hash: string
+          created_at: string
+          duration_minutes: number | null
+          hash_algorithm: string
+          id: string
+          is_public: boolean
+          location: string | null
+          narrative: string
+          pre_session_state: string | null
+          project_id: string | null
+          protocol: string | null
+          sensory_data: Json
+          session_date: string
+          session_time: string | null
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          blockchain_timestamp_id?: string | null
+          capture_mode?: string
+          confidence: number
+          content_hash: string
+          created_at?: string
+          duration_minutes?: number | null
+          hash_algorithm?: string
+          id?: string
+          is_public?: boolean
+          location?: string | null
+          narrative: string
+          pre_session_state?: string | null
+          project_id?: string | null
+          protocol?: string | null
+          sensory_data?: Json
+          session_date: string
+          session_time?: string | null
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          blockchain_timestamp_id?: string | null
+          capture_mode?: string
+          confidence?: number
+          content_hash?: string
+          created_at?: string
+          duration_minutes?: number | null
+          hash_algorithm?: string
+          id?: string
+          is_public?: boolean
+          location?: string | null
+          narrative?: string
+          pre_session_state?: string | null
+          project_id?: string | null
+          protocol?: string | null
+          sensory_data?: Json
+          session_date?: string
+          session_time?: string | null
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phenomenological_reports_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phenomenological_reports_blockchain_timestamp_id_fkey"
+            columns: ["blockchain_timestamp_id"]
+            isOneToOne: false
+            referencedRelation: "blockchain_timestamps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "phenomenological_reports_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
