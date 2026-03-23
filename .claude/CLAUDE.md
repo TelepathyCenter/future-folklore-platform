@@ -51,10 +51,50 @@ nx affected -t test # Only test changed projects
 - **Trigger**: handle_new_user() auto-creates profile on signup
 - **Types**: Auto-generated via `pnpm db:typegen` or Supabase MCP → `packages/db/src/database.types.ts`
 
+## Architecture
+
+### Frontend (Server Actions + Queries Pattern)
+- **Queries** (`lib/queries/*.ts`): Server-side read functions (getProfile, listProjects, etc.)
+- **Actions** (`lib/actions/*.ts`): Server Actions for mutations, call `revalidatePath()` + `redirect()`
+- **Auth** (`lib/auth/actions.ts`): signIn, signUp, signInWithOAuth, signOut, resetPassword
+- **Supabase clients**: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (SSR cookie pattern)
+- **Middleware** (`middleware.ts`): Route protection via `PROTECTED_ROUTES`, Supabase SSR cookie management
+- **Components**: Organized by domain in `components/` (auth, calls, directory, graph, investor, layout, pds, profile, project, resources, updates, ui)
+
+### Backend (Minimal FastAPI)
+- Health check only (`/api/health`), ready for expansion
+- Two Supabase client patterns: `get_supabase_client()` (service role, bypasses RLS) vs `get_user_client(jwt)` (respects RLS)
+- `CORS_ORIGINS` must be JSON array format for pydantic-settings v2
+
+### Shared Packages
+- `@future-folklore-platform/shared`: Enum constants, status labels, validation schemas (profile roles, project statuses, call statuses, resource types, PDS schemas, graph rules)
+- `@future-folklore-platform/db`: Auto-generated Supabase types (`database.types.ts`)
+
+## Environment Variables
+
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://elndhznjnexzutammxdf.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...       # Backend only, never expose to browser
+
+# App URLs
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Backend
+CORS_ORIGINS=["http://localhost:3000"]  # Must be JSON array, not CSV!
+
+# Optional
+ORIGINSTAMP_API_KEY=...             # Blockchain timestamping (free: 500/month, graceful fallback)
+```
+
 ## Conventions
 
 - All Supabase tables use RLS, UUID PKs, timestamptz columns
-- API routes under `/api/` prefix
+- Import alias `@/` for `apps/web/src/`, workspace imports use `@future-folklore-platform/<pkg>`
+- Server Components by default, `'use client'` only when needed, `'use server'` for actions
+- Queries in `lib/queries/`, mutations in `lib/actions/`, components by domain
 - Environment variables in `.env` (never committed), template in `.env.example`
 - Python: type hints required, Ruff for linting/formatting
 - TypeScript: strict mode, no `any`
